@@ -1,5 +1,6 @@
 import fs from "fs/promises";
 import matter from "gray-matter";
+import { existsSync } from "node:fs";
 import path from "path";
 import React from "react";
 
@@ -23,7 +24,13 @@ export async function getBlogPostList() {
 }
 
 export const loadBlogPost = React.cache(async (slug) => {
-  const rawContent = await readFile(`/content/${slug}.mdx`);
+  const path = `/content/${slug}.mdx`;
+
+  if (!fileExists(path)) {
+    return null;
+  }
+
+  const rawContent = await readFile(path);
 
   const { data: frontmatter, content } = matter(rawContent);
 
@@ -36,4 +43,8 @@ function readFile(localPath) {
 
 function readDirectory(localPath) {
   return fs.readdir(path.join(process.cwd(), localPath));
+}
+
+function fileExists(localPath) {
+  return existsSync(path.join(process.cwd(), localPath));
 }

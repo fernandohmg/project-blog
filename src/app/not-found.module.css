@@ -1,0 +1,8 @@
+.notFoundWrapper {
+  padding-top: 96px;
+  text-align: center
+}
+
+.notFoundWrapper h1 {
+  margin-bottom: 1em
+}

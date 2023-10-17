@@ -4,16 +4,23 @@ import { BLOG_TITLE } from "@/constants";
 import { loadBlogPost } from "@/helpers/file-helpers";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import dynamic from "next/dynamic";
+import { notFound } from "next/navigation";
+
 import styles from "./postSlug.module.css";
 const DivisionGroupsDemo = dynamic(() =>
   import("@/components/DivisionGroupsDemo")
 );
 
 export async function generateMetadata({ params }) {
-  const { frontmatter } = await loadBlogPost(params.postSlug);
+  const post = await loadBlogPost(params.postSlug);
+
+  if (!post) {
+    notFound();
+  }
+
   return {
-    title: `${frontmatter.title} • ${BLOG_TITLE}`,
-    description: frontmatter.abstract,
+    title: `${post.frontmatter.title} • ${BLOG_TITLE}`,
+    description: post.frontmatter.abstract,
   };
 }
 
@@ -23,7 +30,13 @@ const components = {
 };
 
 async function BlogPost({ params }) {
-  const { frontmatter, content } = await loadBlogPost(params.postSlug);
+  const post = await loadBlogPost(params.postSlug);
+
+  if (!post) {
+    notFound();
+  }
+
+  const { frontmatter, content } = post;
 
   return (
     <article className={styles.wrapper}>
